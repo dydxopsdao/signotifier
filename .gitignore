@@ -35,5 +35,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# Ignore lock file (contrary to usual best practices) because the project is meant
+# to be used with Terraform Cloud
+.terraform.lock.hcl
+
 # === Python ===
 .python_venv
