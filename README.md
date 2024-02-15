@@ -32,7 +32,7 @@ An example call (change the URL and region accordingly):
 ```
  export AWS_ACCESS_KEY_ID=...
  export AWS_SECRET_ACCESS_KEY=...
-awscurl https://l2ncnwgglvoevbu6hlnz7einoa0hnbvv.lambda-url.ap-northeast-1.on.aws/ \
+awscurl https://x7x7ulg4w7mjnnwi7u4vj5ox7u0kyuvo.lambda-url.ap-northeast-1.on.aws/ \
 --region ap-northeast-1 --service lambda \
 -d '{"subject": "Signotifier test", "content": "Please lorem your ipsums."}'
 ```
