@@ -2,6 +2,8 @@
 
 An AWS Lambda function that signs the input message with an asymmetric key and then sends it via email to a predefined set of recipients.
 
+The dYdX Operations Subdao utilizes this tool to inform validators of critical events. This tool is designed to be universally applicable; interested parties can fork this repository, modify the sender information, and adapt it to their requirements. For details on licensing, please consult the LICENSE file.
+
 The input should be a JSON with the following format:
 
 ```
@@ -32,7 +34,7 @@ An example call (change the URL and region accordingly):
  export AWS_SECRET_ACCESS_KEY=...
 awscurl https://l2ncnwgglvoevbu6hlnz7einoa0hnbvv.lambda-url.ap-northeast-1.on.aws/ \
 --region ap-northeast-1 --service lambda \
--d '{"subject": "Signotifier test", "content":"Please lorem your ipsums."}'
+-d '{"subject": "Signotifier test", "content": "Please lorem your ipsums."}'
 ```
 
 For details about Lambda invocation and authentication methods see:
