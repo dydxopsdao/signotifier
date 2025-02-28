@@ -27,12 +27,28 @@ The signing key is RSA 4096 and the algorithm used is SHA-256 with the padding s
 
 The lambda function has to be invoked by an IAM user with the `lambda:InvokeFunctionUrl` permission in the project.
 This could be done via CLI, SDK, or the bare API. A convenient tool for CLI calls is `awscurl`. 
-An example call (change the URL and region accordingly):
+
+Set up `~/.aws/config` in the following way:
 
 ```
- export AWS_ACCESS_KEY_ID=...
- export AWS_SECRET_ACCESS_KEY=...
-awscurl https://x7x7ulg4w7mjnnwi7u4vj5ox7u0kyuvo.lambda-url.ap-northeast-1.on.aws/ \
+[profile dydxopsdao]
+region = ap-northeast-1
+sso_start_url = https://dydxopsservices.awsapps.com/start/
+sso_region = ap-northeast-1
+sso_session = dydxopsdao
+sso_account_id = <root account id>
+sso_role_name = AdministratorAccess
+
+[profile signotifier]
+region = ap-northeast-1
+role_arn = arn:aws:iam::<signotifier account id>:role/OrganizationAccountAccessRole
+source_profile = dydxopsdao
+```
+
+Then a test call with `awscurl` could look like this:
+
+```
+AWS_PROFILE=signotifier awscurl https://x7x7ulg4w7mjnnwi7u4vj5ox7u0kyuvo.lambda-url.ap-northeast-1.on.aws/ \
 --region ap-northeast-1 --service lambda \
 -d '{"subject": "Signotifier test", "content": "Please lorem your ipsums."}'
 ```
