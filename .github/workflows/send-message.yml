@@ -11,7 +11,6 @@ on:
         description: 'Content'
         required: true
         type: string
-        format: textarea
 
 jobs:
   send-message:
@@ -34,7 +33,7 @@ jobs:
             '{"subject": $subject, "content": $content}')
           
           # Call Lambda function
-          aws lambda invoke-url ${{ secrets.LAMBDA_URL }} \
+          aws lambda invoke ${{ vars.LAMBDA_URL }} \
             --payload "$payload" \
             --cli-binary-format raw-in-base64-out \
             response.json
