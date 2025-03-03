@@ -17,3 +17,15 @@ variable "codebuild_github_branch" {
   type        = string
   description = "Repository branch that should be used by CodeBuild."
 }
+
+variable "github_org" {
+  description = "GitHub organization name"
+  type        = string
+  default     = "dydxopsdao"
+}
+
+variable "github_repo" {
+  description = "GitHub repository name"
+  type        = string
+  default     = "signotifier"
+}
