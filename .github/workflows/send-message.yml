@@ -11,6 +11,7 @@ on:
         description: 'Content'
         required: true
         type: string
+        format: textarea
 
 jobs:
   send-message:
