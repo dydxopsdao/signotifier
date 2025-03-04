@@ -23,7 +23,7 @@ def run(event, context):
     logger.info(f"Caller ARN: {caller_arn}")
 
     try:
-        subject, unified_message, decorated_content = validate_input(event)
+        subject, unified_message, decorated_content, recipients = validate_input(event)
     except MessageTooLongError as e:
         logger.info("Message is too long")
         return {
@@ -41,7 +41,7 @@ def run(event, context):
     )
     kms_signature = kms_signer.sign(unified_message)
 
-    send_emails(subject, decorated_content, unified_message, kms_signature)
+    send_emails(subject, decorated_content, unified_message, kms_signature, recipients)
 
     response = {
         "signature_base64": base64.b64encode(kms_signature).decode("ascii"),
@@ -49,7 +49,7 @@ def run(event, context):
     return json.dumps(response)
 
 
-def validate_input(event) -> Tuple[str, bytes, str]:
+def validate_input(event) -> Tuple[str, bytes, str, str]:
     body_string = (
         base64.b64decode(event["body"]) if event["isBase64Encoded"] else event["body"]
     )
@@ -59,13 +59,20 @@ def validate_input(event) -> Tuple[str, bytes, str]:
     content = body["content"].encode('utf-8').decode('unicode_escape')
     logger.info(f"Subject: {subject}; Content: {content}")
 
+    recipients = os.environ["RECIPIENTS"]
+    if "recipients" in body:
+        recipients = body["recipients"]
+        logger.info(f"Overriding recipients: {recipients}")
+    else:
+        logger.info(f"Using default recipients.")
+
     unified_message = f"{subject}\n\n{content}".encode("utf-8")
     if len(unified_message) > MAX_MESSAGE_LENGTH:
         raise MessageTooLongError()
 
     decorated_content = decorate_content(content)
 
-    return subject, unified_message, decorated_content
+    return subject, unified_message, decorated_content, recipients
 
 
 def decorate_content(original_message: str) -> str:
@@ -83,14 +90,14 @@ def decorate_content(original_message: str) -> str:
 
 
 def send_emails(
-    subject: str, decorated_content: str, unified_message: bytes, signature: bytes
+    subject: str, decorated_content: str, unified_message: bytes, signature: bytes, recipients: str
 ):
     email_client = Mailer(
         sender=os.environ["SENDER"],
         region=os.environ["EMAIL_AWS_REGION"],
         logger=logger,
     )
-    for recipient_raw in os.environ["RECIPIENTS"].split(","):
+    for recipient_raw in recipients.split(","):
         recipient_cleaned = recipient_raw.strip()
         if not recipient_cleaned:
             continue

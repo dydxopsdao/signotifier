@@ -11,6 +11,10 @@ on:
         description: 'Content'
         required: true
         type: string
+      recipients:
+        description: 'Recipients (overrides default, comma separated)'
+        required: false
+        type: string
 
 jobs:
   send-message:
@@ -30,6 +34,7 @@ jobs:
           payload=$(jq -n \
             --arg subject "${{ inputs.subject }}" \
             --arg content "${{ inputs.content }}" \
+            --arg recipients "${{ inputs.recipients }}" \
             '{
               "body": {"subject": $subject, "content": $content} | tostring,
               "isBase64Encoded": false,

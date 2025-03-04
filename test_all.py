@@ -2,6 +2,7 @@ import base64
 import json
 import os
 from unittest import mock
+from unittest.mock import patch
 
 from src import lambda_function
 
@@ -46,6 +47,32 @@ def test_success():
         SigningAlgorithm="RSASSA_PSS_SHA_256",
     )
     assert mocked_boto3_client.instances[1].send_raw_email.call_count == 2
+
+
+def test_validate_input_with_recipients_override():
+    event = {
+        "body": json.dumps({
+            "subject": "Test Subject",
+            "content": "Test Content",
+            "recipients": "override@example.com, another@example.com"
+        }),
+        "isBase64Encoded": False,
+        "requestContext": {
+            "authorizer": {
+                "iam": {
+                    "userArn": "arn:aws:iam::123456789012:role/github-actions"
+                }
+            }
+        }
+    }
+    
+    # Mock the environment variable
+    with patch.dict(os.environ, {"RECIPIENTS": "default@example.com"}):
+        subject, _, decorated_content, recipients = lambda_function.validate_input(event)
+        
+        assert subject == "Test Subject"
+        assert recipients == "override@example.com, another@example.com"
+        assert "Test Content" in decorated_content
 
 
 class MockedBoto3ClientFactory:
