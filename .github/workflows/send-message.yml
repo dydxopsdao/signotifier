@@ -36,7 +36,7 @@ jobs:
             --arg content "${{ inputs.content }}" \
             --arg recipients "${{ inputs.recipients }}" \
             '{
-              "body": {"subject": $subject, "content": $content} | tostring,
+              "body": {"subject": $subject, "content": $content, "recipients": $recipients} | tostring,
               "isBase64Encoded": false,
               "requestContext": {
                 "authorizer": {
