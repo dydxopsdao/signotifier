@@ -30,7 +30,17 @@ jobs:
           payload=$(jq -n \
             --arg subject "${{ inputs.subject }}" \
             --arg content "${{ inputs.content }}" \
-            '{"subject": $subject, "content": $content}')
+            '{
+              "body": {"subject": $subject, "content": $content} | tostring,
+              "isBase64Encoded": false,
+              "requestContext": {
+                "authorizer": {
+                  "iam": {
+                    "userArn": $AWS_GITHUB_ACTIONS_ROLE_ARN
+                  }
+                }
+              }
+            }')
           
           # Call Lambda function
           aws lambda invoke \
