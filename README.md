@@ -25,8 +25,29 @@ The signing key is RSA 4096 and the algorithm used is SHA-256 with the padding s
 
 ## Usage
 
-The lambda function has to be invoked by an IAM user with the `lambda:InvokeFunctionUrl` permission in the project.
-This could be done via CLI, SDK, or the bare API. A convenient tool for CLI calls is `awscurl`. 
+There are several ways to invoke the Lambda function.
+
+For details about Lambda invocation and authentication methods see:
+
+* https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html#urls-invocation-basics
+* https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html.
+
+### GitHub Actions
+
+This is the preferred method.
+
+Go to the [Send Signed Message](https://github.com/dydxopsdao/signotifier/actions/workflows/send-message.yml) action and fill in the `subject` and `content` fields.
+
+Note: in order to include newlines in the `content` field, you need to type `\n` instead of a newline. For example:
+
+```
+subject:Test
+content: This is a test\nSecond line
+```
+
+### CLI
+
+The Lambda function can be also invoked via CLI using `awscurl`.
 
 Set up `~/.aws/config` in the following way:
 
@@ -53,22 +74,6 @@ AWS_PROFILE=signotifier awscurl https://x7x7ulg4w7mjnnwi7u4vj5ox7u0kyuvo.lambda-
 -d '{"subject": "Signotifier test", "content": "Please lorem your ipsums."}'
 ```
 
-For details about Lambda invocation and authentication methods see:
-
-* https://docs.aws.amazon.com/lambda/latest/dg/urls-invocation.html#urls-invocation-basics
-* https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html.
-
-
-The Lambda endpoint can be obtained from the Terraform output item: `lambda_endpoint`.
-
-The combined length of subject and content must not exceed 4096 bytes due to RSA limitations.
-
-To verify the signature created by the Lambda function run:
-
-```
-openssl dgst -sha256 -verify dydxops-pubkey.pem -signature signature.sig -sigopt rsa_padding_mode:pss message.txt
-```
-
 ## Setup
 
 ### AWS account
@@ -79,42 +84,18 @@ It is recommended to created a dedicated AWS account for the project. This is a 
 
 Set up Amazon SES by following their guide at: https://docs.aws.amazon.com/ses/latest/dg/setting-up.html#quick-start-verify-email-addresses .
 
-### IAM users
+### Lambda function
 
-#### User for Terraform Cloud
+The Lambda function is deployed via Terraform.
 
-Manually create an AWS IAM user that Terraform Cloud will impersonate to deploy the solution. Preferably use a dedicated AWS account.
-Call it e.g.: `terraformer`. Go to:
-`IAM -> Users -> [your new user] -> Permissions -> Add permissions -> Attach policies directly`
-and add the following managed policies:
+The Lambda endpoint can be obtained from the Terraform output item: `lambda_endpoint`.
 
-* AmazonEC2ContainerRegistryFullAccess
-* AWSLambda_FullAccess
-* IAMFullAccess
-* AWSCodeBuildAdminAccess
-* AWSKeyManagementServicePowerUser
+The combined length of subject and content must not exceed 4096 bytes due to RSA limitations.
 
-#### Invoker user
-
-To authenticate to the Lambda function you need an IAM user with appropriate permissions.
-Create this user manually in the account where the function lives.
-A simple IAM inline policy could look like this:
+To verify the signature created by the Lambda function run:
 
 ```
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "lambda:InvokeFunctionUrl"
-            ],
-            "Resource": [
-                "*"
-            ]
-        }
-    ]
-}
+openssl dgst -sha256 -verify dydxops-pubkey.pem -signature signature.sig -sigopt rsa_padding_mode:pss message.txt
 ```
 
 ### Terraform project
