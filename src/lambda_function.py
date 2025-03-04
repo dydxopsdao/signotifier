@@ -21,6 +21,7 @@ class MessageTooLongError(Exception):
 def run(event, context):
     caller_arn = event["requestContext"]["authorizer"]["iam"]["userArn"]
     logger.info(f"Caller ARN: {caller_arn}")
+    logger.info(f"Event: {event}")
 
     try:
         subject, unified_message, decorated_content, recipients = validate_input(event)
@@ -40,6 +41,7 @@ def run(event, context):
         logger=logger,
     )
     kms_signature = kms_signer.sign(unified_message)
+    logger.info(f"recipients: {recipients}")
 
     send_emails(subject, decorated_content, unified_message, kms_signature, recipients)
 
