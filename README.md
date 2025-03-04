@@ -36,7 +36,7 @@ For details about Lambda invocation and authentication methods see:
 
 This is the preferred method.
 
-Go to the [Send Signed Message](https://github.com/dydxopsdao/signotifier/actions/workflows/send-message.yml) action and fill in the `subject` and `content` fields.
+Go to the [Send Signed Message](https://github.com/dydxopsdao/signotifier/actions/workflows/send-message.yml) action, press `Run workflow`, and fill in the `subject` and `content` fields.
 
 Note: in order to include newlines in the `content` field, you need to type `\n` instead of a newline. For example:
 
