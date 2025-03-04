@@ -36,7 +36,7 @@ jobs:
               "requestContext": {
                 "authorizer": {
                   "iam": {
-                    "userArn": ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+                    "userArn": "${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}"
                   }
                 }
               }
