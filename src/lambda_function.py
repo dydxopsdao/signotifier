@@ -59,12 +59,7 @@ def validate_input(event) -> Tuple[str, bytes, str, str]:
     content = body["content"].encode('utf-8').decode('unicode_escape')
     logger.info(f"Subject: {subject}; Content: {content}")
 
-    recipients = os.environ["RECIPIENTS"]
-    if "recipients" in body:
-        recipients = body["recipients"]
-        logger.info(f"Overriding recipients: {recipients}")
-    else:
-        logger.info(f"Using default recipients.")
+    recipients = body["recipients"]
 
     unified_message = f"{subject}\n\n{content}".encode("utf-8")
     if len(unified_message) > MAX_MESSAGE_LENGTH:

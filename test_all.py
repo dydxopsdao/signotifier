@@ -10,7 +10,6 @@ from src import lambda_function
 def test_success():
     os.environ["EMAIL_AWS_REGION"] = "region"
     os.environ["SENDER"] = "sender"
-    os.environ["RECIPIENTS"] = "recipient1,recipient2"
     os.environ["KMS_SIGNING_KEY_ID"] = "key-id"
 
     with mock.patch("boto3.client", MockedBoto3ClientFactory) as mocked_boto3_client:
@@ -22,6 +21,7 @@ def test_success():
                         {
                             "subject": "test-subject",
                             "content": "test-content",
+                            "recipients": "test1@test.com,test2@test.com"
                         }
                     ).encode("ascii")
                 ).decode("ascii"),
@@ -47,32 +47,6 @@ def test_success():
         SigningAlgorithm="RSASSA_PSS_SHA_256",
     )
     assert mocked_boto3_client.instances[1].send_raw_email.call_count == 2
-
-
-def test_validate_input_with_recipients_override():
-    event = {
-        "body": json.dumps({
-            "subject": "Test Subject",
-            "content": "Test Content",
-            "recipients": "override@example.com, another@example.com"
-        }),
-        "isBase64Encoded": False,
-        "requestContext": {
-            "authorizer": {
-                "iam": {
-                    "userArn": "arn:aws:iam::123456789012:role/github-actions"
-                }
-            }
-        }
-    }
-    
-    # Mock the environment variable
-    with patch.dict(os.environ, {"RECIPIENTS": "default@example.com"}):
-        subject, _, decorated_content, recipients = lambda_function.validate_input(event)
-        
-        assert subject == "Test Subject"
-        assert recipients == "override@example.com, another@example.com"
-        assert "Test Content" in decorated_content
 
 
 class MockedBoto3ClientFactory:

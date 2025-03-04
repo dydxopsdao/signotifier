@@ -45,6 +45,8 @@ subject:Test
 content: This is a test\nSecond line
 ```
 
+In order to edit the list of recipients, edit the `RECIPIENTS` variable in the [repository's variables](https://github.com/dydxopsdao/signotifier/settings/variables/actions). Use comma-separated values.
+
 ### CLI
 
 The Lambda function can be also invoked via CLI using `awscurl`.
@@ -71,7 +73,7 @@ Then a test call with `awscurl` could look like this:
 ```
 AWS_PROFILE=signotifier awscurl https://x7x7ulg4w7mjnnwi7u4vj5ox7u0kyuvo.lambda-url.ap-northeast-1.on.aws/ \
 --region ap-northeast-1 --service lambda \
--d '{"subject": "Signotifier test", "content": "Please lorem your ipsums."}'
+-d '{"subject": "Signotifier test", "content": "Please lorem your ipsums.", "recipients": "test1@test.com,test2@test.com"}'
 ```
 
 ## Setup
