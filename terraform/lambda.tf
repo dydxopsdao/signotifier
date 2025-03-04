@@ -64,7 +64,6 @@ resource "aws_lambda_function" "signotifier" {
     variables = {
       EMAIL_AWS_REGION    = data.aws_region.current.name
       SENDER              = var.sender
-      RECIPIENTS          = var.recipients
       KMS_SIGNING_KEY_ID  = aws_kms_key.signing_key.key_id
     }
   }
