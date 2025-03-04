@@ -56,7 +56,7 @@ def validate_input(event) -> Tuple[str, bytes, str]:
     body = json.loads(body_string)
 
     subject = body["subject"]
-    content = body["content"]
+    content = body["content"].encode('utf-8').decode('unicode_escape')
     logger.info(f"Subject: {subject}; Content: {content}")
 
     unified_message = f"{subject}\n\n{content}".encode("utf-8")
