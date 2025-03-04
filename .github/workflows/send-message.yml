@@ -33,7 +33,8 @@ jobs:
             '{"subject": $subject, "content": $content}')
           
           # Call Lambda function
-          aws lambda invoke ${{ vars.LAMBDA_URL }} \
+          aws lambda invoke \
+            --function-name ${{ vars.LAMBDA_FUNCTION_NAME }} \
             --payload "$payload" \
             --cli-binary-format raw-in-base64-out \
             response.json
