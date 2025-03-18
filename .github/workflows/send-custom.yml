@@ -1,4 +1,4 @@
-name: Send Signed Message
+name: Send to Custom Recipients
 
 on:
   workflow_dispatch:
@@ -9,6 +9,10 @@ on:
         type: string
       content:
         description: 'Content'
+        required: true
+        type: string
+      recipients:
+        description: 'Recipients'
         required: true
         type: string
 
@@ -30,7 +34,7 @@ jobs:
           payload=$(jq -n \
             --arg subject "${{ inputs.subject }}" \
             --arg content "${{ inputs.content }}" \
-            --arg recipients "${{ vars.RECIPIENTS }}" \
+            --arg recipients "${{ inputs.recipients }}" \
             '{
               "body": {"subject": $subject, "content": $content, "recipients": $recipients} | tostring,
               "isBase64Encoded": false,

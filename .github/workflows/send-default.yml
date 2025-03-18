@@ -1,0 +1,54 @@
+name: Send to Default Recipients
+
+on:
+  workflow_dispatch:
+    inputs:
+      subject:
+        description: 'Subject'
+        required: true
+        type: string
+      content:
+        description: 'Content'
+        required: true
+        type: string
+
+jobs:
+  send-message:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write    # Required for OIDC authentication
+      contents: read     # Required to checkout the repository
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - name: Send message via Lambda
+        run: |
+          # Create JSON payload
+          payload=$(jq -n \
+            --arg subject "${{ inputs.subject }}" \
+            --arg content "${{ inputs.content }}" \
+            --arg recipients "${{ vars.RECIPIENTS }}" \
+            '{
+              "body": {"subject": $subject, "content": $content, "recipients": $recipients} | tostring,
+              "isBase64Encoded": false,
+              "requestContext": {
+                "authorizer": {
+                  "iam": {
+                    "userArn": "${{ vars.AWS_GITHUB_ACTIONS_ROLE_ARN }}"
+                  }
+                }
+              }
+            }')
+          
+          # Call Lambda function
+          aws lambda invoke \
+            --function-name ${{ vars.LAMBDA_FUNCTION_NAME }} \
+            --payload "$payload" \
+            --cli-binary-format raw-in-base64-out \
+            response.json
+
+          # Show response
+          cat response.json 
