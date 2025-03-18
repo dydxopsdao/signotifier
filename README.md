@@ -36,7 +36,9 @@ For details about Lambda invocation and authentication methods see:
 
 This is the preferred method.
 
-Go to the [Send Signed Message](https://github.com/dydxopsdao/signotifier/actions/workflows/send-message.yml) action, press `Run workflow`, and fill in the `subject` and `content` fields.
+To send a message to the default recipients (i.e. the ones defined in the `RECIPIENTS` variable), go to the [Send to Default Recipients](https://github.com/dydxopsdao/signotifier/actions/workflows/send-default.yml) action, press `Run workflow`, and fill in the `subject` and `content` fields.
+
+To send a message to custom recipients, go to the [Send to Custom Recipients](https://github.com/dydxopsdao/signotifier/actions/workflows/send-custom.yml) action, press `Run workflow`, and fill in the `subject`, `content`, and `recipients` (comma-separated list of emails) fields.
 
 Note: in order to include newlines in the `content` field, you need to type `\n` instead of a newline. For example:
 
